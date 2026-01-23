@@ -1,0 +1,69 @@
+'use client';
+
+import { Code } from '@mui/icons-material';
+import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
+import { CommandDisplay } from '@/features/last-steps/components/CommandDisplay';
+
+export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength: number }) => {
+  const [nameProject, setNameProject] = useState('Nome');
+
+  return (
+    <Box
+      component={'aside'}
+      sx={{
+        width: '30vw',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        bgColor: 'background.paper',
+        borderRight: '1px solid',
+        borderColor: 'divider',
+        p: 4,
+        bgcolor: 'background.paper',
+      }}
+    >
+      <Typography
+        variant={'h4'}
+        sx={{
+          fontWeight: 700,
+        }}
+      >
+        Ultimos Passos
+      </Typography>
+      <Typography
+        variant="subtitle2"
+        color="textSecondary"
+        sx={{
+          mb: 4,
+        }}
+      >
+        Instale suas libs e types de forma prática
+        <Divider orientation="horizontal" />
+      </Typography>
+
+      <TextField
+        variant="outlined"
+        label="Nome do projeto"
+        placeholder="Digite o nome do seu projeto..."
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <Code />
+              </InputAdornment>
+            ),
+          },
+        }}
+        value={nameProject}
+        onChange={e => {
+          if (e.target.value.length <= maxLength) {
+            setNameProject(e.target.value);
+          }
+        }}
+        helperText={`${nameProject.length}/${maxLength}`}
+      />
+      <CommandDisplay command={`npm create next-app ${nameProject} --typescript`} />
+    </Box>
+  );
+};
