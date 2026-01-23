@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 
-export default function Home() {
+export default function AutoLibPage() {
   return (
     <Box>
       <Typography>Projeto Autolib</Typography>
