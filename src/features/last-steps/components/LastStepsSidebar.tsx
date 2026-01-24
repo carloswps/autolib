@@ -5,7 +5,7 @@ import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/materi
 import { useState } from 'react';
 import { CommandDisplay } from '@/features/last-steps/components/CommandDisplay';
 
-export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength: number }) => {
+export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => {
   const [nameProject, setNameProject] = useState('Nome');
 
   return (

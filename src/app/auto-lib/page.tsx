@@ -1,9 +1,9 @@
-import { Box, Typography } from '@mui/material';
+import { SelectionArea } from '@/features/stack-config/components/SelectionArea';
 
 export default function AutoLibPage() {
   return (
-    <Box>
-      <Typography>Projeto Autolib</Typography>
-    </Box>
+    <>
+      <SelectionArea />
+    </>
   );
 }

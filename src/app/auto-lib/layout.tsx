@@ -15,7 +15,7 @@ export default function AutoLibLayout({ children }: { children: ReactNode }) {
           component={'main'}
           sx={{
             flexGrow: 1,
-            p: { xs: 3, md: 6 },
+            p: 4,
             overflow: 'auto',
           }}
         >
