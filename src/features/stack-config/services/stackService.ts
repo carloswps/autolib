@@ -4,12 +4,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default class StackService {
   async getPackages(): Promise<TechItem[]> {
-    const response = await fetch(`https://autolib-api.onrender.com/package/read`, {
+    const response = await fetch(`${API_URL}/package/read`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
@@ -20,12 +19,11 @@ export default class StackService {
   }
 
   async getTechs(): Promise<TechItem[]> {
-    const response = await fetch(`https://autolib-api.onrender.com/lib/read`, {
+    const response = await fetch(`${API_URL}/package/read`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {

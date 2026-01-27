@@ -5,17 +5,6 @@ import { SectionsWrapper } from '@/shared/components/SectionsWrapper';
 import { useStack } from '@/features/stack-config/hooks/useStack';
 import { ICON_MAPPER } from '@/shared/constants/iconMapper';
 
-const techs = [
-  { name: 'TansStack', icon: '/icons/TansTack.png' },
-  { name: 'Svelte', icon: '/icons/Svelte.png' },
-  { name: 'Solid', icon: '/icons/solid.png' },
-  { name: 'Nuxt', icon: '/icons/nuxt.png' },
-  { name: 'React', icon: '/icons/react.png' },
-  { name: 'Astro', icon: '/icons/astro.png' },
-  { name: 'Tanstack Start', icon: '/icons/TansTack.png' },
-  { name: 'React Router', icon: '/icons/ReactRouter.png' },
-];
-
 export const WebFrontend = () => {
   const { availableTechs, toggleSelection, selections } = useStack();
   const techs = availableTechs.filter(tech => tech.category === 'web-frontend');
@@ -25,7 +14,7 @@ export const WebFrontend = () => {
     <SectionsWrapper title={'Web Frontend'} subtitle={'Escolha a sua stack de frontend preferida.'}>
       {techs.map(tech => {
         const isSelected = selectedId === tech.id;
-        const iconPath = ICON_MAPPER[tech.name] || '/icons/default.png';
+        const iconPath = ICON_MAPPER[tech.name] || '/logo.png';
 
         return (
           <Button
@@ -41,6 +30,8 @@ export const WebFrontend = () => {
               boxShadow: 'none',
               justifyContent: 'flex-start',
               '&:hover': { bgcolor: '#eceef1' },
+              width: 'auto',
+              height: '50px',
             }}
           >
             {tech.name}

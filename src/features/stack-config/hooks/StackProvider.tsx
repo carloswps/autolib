@@ -16,7 +16,10 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
       try {
         setLoading(true);
         const data = await getStackService.getTechs();
-        setAvailableTechs(data);
+        const uniqueByCategoryAndName = Array.from(
+          new Map(data.map(item => [`${item.category}:${item.name}`, item])).values(),
+        );
+        setAvailableTechs(uniqueByCategoryAndName);
       } catch (e: any) {
         console.error('Falha ao buscar pacotes: ', e.message || 'Erro desconhecido.');
       } finally {

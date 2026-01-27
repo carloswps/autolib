@@ -16,16 +16,12 @@ export const SectionsWrapper = ({
     <Typography variant={'h4'} fontWeight={700} sx={{ mb: 0.5 }}>
       {title}
     </Typography>
-    <Typography
-      variant={'body2'}
-      color="textSecondary"
-      sx={{
-        mb: 4,
-      }}
-    >
-      {subtitle}
+    <Box sx={{ mb: 4 }}>
+      <Typography variant={'body2'} color="textSecondary">
+        {subtitle}
+      </Typography>
       <Divider orientation="horizontal" />
-    </Typography>
+    </Box>
     <Box
       sx={{
         display: 'grid',
