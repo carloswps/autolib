@@ -19,7 +19,7 @@ export default class StackService {
   }
 
   async getTechs(): Promise<TechItem[]> {
-    const response = await fetch(`${API_URL}/package/read`, {
+    const response = await fetch(`https://autolib-api.onrender.com/lib/read`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
