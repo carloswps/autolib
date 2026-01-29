@@ -4,5 +4,5 @@ export interface TechItem {
   category: string;
   install: string;
   dev: string | null;
-  packageManaerId: number;
+  packageManagerId: number;
 }

@@ -4,9 +4,12 @@ import { Code } from '@mui/icons-material';
 import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { CommandDisplay } from '@/features/last-steps/components/CommandDisplay';
+import { SelectedStackSummary } from '@/features/last-steps/components/SelectedStackSummary';
+import { useStack } from '@/features/stack-config/hooks/useStack';
 
 export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => {
-  const [nameProject, setNameProject] = useState('Nome');
+  const [nameProject, setNameProject] = useState<string>('');
+  const { selections, generatedCommand } = useStack();
 
   return (
     <Box
@@ -63,7 +66,9 @@ export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => 
         }}
         helperText={`${nameProject.length}/${maxLength}`}
       />
-      <CommandDisplay command={`npm create next-app ${nameProject} --typescript`} />
+      {/*<CommandDisplay command={getProjectCreationCommand()} />*/}
+      <CommandDisplay command={generatedCommand} />
+      <SelectedStackSummary />
     </Box>
   );
 };

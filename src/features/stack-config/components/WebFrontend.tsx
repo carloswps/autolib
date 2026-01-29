@@ -1,11 +1,10 @@
-import { Block } from '@mui/icons-material';
-import { Button } from '@mui/material';
 import { SectionsWrapper } from '@/shared/components/SectionsWrapper';
 import { useStack } from '@/features/stack-config/hooks/useStack';
 import { TechButton } from '@/shared/components/TechButton';
+import { ClearButton } from '@/shared/components/ClearButton';
 
 export const WebFrontend = () => {
-  const { availableTechs, toggleSelection, selections } = useStack();
+  const { availableTechs, toggleSelection, selections, clearCategory } = useStack();
   const techs = availableTechs.filter(tech => tech.category === 'web-frontend');
   const selectedId = selections['web-frontend']?.id;
 
@@ -14,21 +13,7 @@ export const WebFrontend = () => {
       {techs.map(tech => (
         <TechButton key={tech.id} tech={tech} isSelected={selectedId === tech.id} onToggle={toggleSelection} />
       ))}
-      <Button
-        variant={'contained'}
-        sx={{
-          bgcolor: '#f4f5f7',
-          color: '#333',
-          borderRadius: '50px',
-          textTransform: 'none',
-          boxShadow: 'none',
-          justifyContent: 'flex-start',
-          '&:hover': { bgcolor: '#eceef1' },
-        }}
-        startIcon={<Block />}
-      >
-        No Web Frontend
-      </Button>
+      <ClearButton onClick={() => clearCategory('web-frontend')} info={'No Web Frontend'} />
     </SectionsWrapper>
   );
 };

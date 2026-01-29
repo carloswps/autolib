@@ -27,6 +27,7 @@ export const TechButton = ({ tech, isSelected, onToggle }: TechButtonProps) => {
         justifyContent: 'flex-start',
         '&:hover': { bgcolor: '#eceef1' },
       }}
+      disabled={isSelected}
     >
       {tech.name}
     </Button>

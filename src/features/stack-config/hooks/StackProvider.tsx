@@ -17,7 +17,7 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         const data = await getStackService.getTechs();
         const uniqueByCategoryAndName = Array.from(
-          new Map(data.map(item => [`${item.category}:${item.name}`, item])).values(),
+          new Map(data.map(item => [`${item.category}:${item.name}`, item])).values()
         );
         setAvailableTechs(uniqueByCategoryAndName);
       } catch (e: any) {
@@ -59,6 +59,10 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     return command;
   }, [selections, packageManager]);
 
+  const resetStack = () => {
+    setSelections({});
+  };
+
   return (
     <StackContext.Provider
       value={{
@@ -68,6 +72,7 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
         toggleSelection,
         clearCategory,
         generatedCommand,
+        resetStack,
       }}
     >
       {children}
