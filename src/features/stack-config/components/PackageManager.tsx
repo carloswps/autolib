@@ -1,19 +1,15 @@
 'use client';
 
 import { Box, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
-import { useState } from 'react';
-
-const PACKAGES = [
-  { name: 'BUN', value: 'bun created better' },
-  { name: 'PNPM', value: 'pnpm created' },
-  { name: 'NPM', value: 'npm init' },
-];
+import { useStack } from '@/features/stack-config/hooks/useStack';
 
 export const PackageManager = () => {
-  const [selectedPackage, setSelectedPackge] = useState('');
+  const { packageManagers, selectedPackageManager, setPackageManager } = useStack();
 
-  const handleSelect = (e: SelectChangeEvent) => {
-    setSelectedPackge(e.target.value as string);
+  const handleSelect = (e: SelectChangeEvent<number>) => {
+    const selectedId = e.target.value;
+    const manager = packageManagers.find(pkg => pkg.id === selectedId) ?? null;
+    setPackageManager(manager);
   };
 
   return (
@@ -38,23 +34,23 @@ export const PackageManager = () => {
       </Typography>
       <FormControl fullWidth variant={'outlined'}>
         <InputLabel id={'package-selected-label'}>Gerenciadores</InputLabel>
-        <Select
-          value={selectedPackage}
+        <Select<number>
+          value={selectedPackageManager?.id ?? ''}
           label="Gerenciadores"
           onChange={handleSelect}
           labelId={'package-selected-label'}
           displayEmpty={true}
         >
-          {PACKAGES.map(pkg => (
-            <MenuItem key={pkg.value} value={pkg.name}>
+          {packageManagers.map(pkg => (
+            <MenuItem key={pkg.id} value={pkg.id}>
               {pkg.name}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-      {selectedPackage && (
+      {selectedPackageManager && (
         <Typography variant="caption" sx={{ mt: 1, display: 'block', color: 'primary.main' }}>
-          Comando base: {selectedPackage}
+          Comando base: {selectedPackageManager.install}
         </Typography>
       )}
     </Box>

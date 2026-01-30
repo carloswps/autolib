@@ -1,13 +1,15 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { TechItem } from '@/shared/types/techItem';
+import { PackageManager, TechItem } from '@/shared/types/techItem';
 import StackService from '@/features/stack-config/services/stackService';
 import { StackContext } from './StackContext';
 
 export const StackProvider = ({ children }: { children: ReactNode }) => {
   const [availableTechs, setAvailableTechs] = useState<TechItem[]>([]);
   const [selections, setSelections] = useState<Record<string, TechItem | null>>({});
+  const [packageManagers, setPackageManagers] = useState<PackageManager[]>([]);
+  const [selectedPackageManager, setSelectedPackageManager] = useState<PackageManager | null>(null);
+  const [projectName, setProjectName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [packageManager] = useState('pnpm');
 
   const getStackService = useRef(new StackService()).current;
 
@@ -29,6 +31,22 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     fetchData();
   }, [getStackService]);
 
+  useEffect(() => {
+    const fetchPackage = async () => {
+      try {
+        setLoading(true);
+        const data = await getStackService.getPackages();
+        setPackageManagers(data);
+        setSelectedPackageManager(prev => prev ?? data[0] ?? null);
+      } catch (e: any) {
+        console.error('Falha ao buscar pacotes: ', e.message || 'Erro desconhecido.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPackage();
+  }, [getStackService]);
+
   const toggleSelection = (item: TechItem) => {
     setSelections(prev => ({
       ...prev,
@@ -43,21 +61,30 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
 
-    if (selectedList.length === 0) return 'Selecione uma tecnologia...';
-
     const installDeps = selectedList.map(s => s.install).join(' ');
     const devDeps = selectedList
       .map(s => s.dev)
       .filter(Boolean)
       .join(' ');
 
-    let command = `${packageManager} add ${installDeps}`;
-    if (devDeps) {
-      command += `\n${packageManager} add -D ${devDeps}`;
+    const baseInstall = selectedPackageManager?.install ?? 'pnpm add';
+    const commandLines: string[] = [];
+
+    if (projectName.trim()) {
+      commandLines.push(`mkdir "${projectName.trim()}"`, `cd "${projectName.trim()}"`);
     }
 
-    return command;
-  }, [selections, packageManager]);
+    if (selectedList.length > 0) {
+      commandLines.push(`${baseInstall} ${installDeps}`);
+      if (devDeps) {
+        commandLines.push(`${baseInstall} -D ${devDeps}`);
+      }
+    }
+
+    if (commandLines.length === 0) return 'Selecione uma tecnologia...';
+
+    return commandLines.join('\n');
+  }, [projectName, selections, selectedPackageManager]);
 
   const resetStack = () => {
     setSelections({});
@@ -67,12 +94,17 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     <StackContext.Provider
       value={{
         availableTechs,
+        packageManagers,
+        selectedPackageManager,
+        projectName,
         selections,
         loading,
         toggleSelection,
         clearCategory,
         generatedCommand,
         resetStack,
+        setProjectName,
+        setPackageManager: setSelectedPackageManager,
       }}
     >
       {children}

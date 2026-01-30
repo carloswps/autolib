@@ -1,18 +1,19 @@
-import { TechItem } from '@/shared/types/techItem';
+import { PackageManager, TechItem } from '@/shared/types/techItem';
 import { createContext } from 'react';
-
-export type PackageManager = 'npm' | 'pnpm' | 'yarn';
 
 interface StackContextType {
   availableTechs: TechItem[];
+  packageManagers: PackageManager[];
+  selectedPackageManager: PackageManager | null;
+  projectName: string;
   selections: Record<string, TechItem | null>;
   loading: boolean;
   toggleSelection: (item: TechItem) => void;
   clearCategory: (category: string) => void;
   generatedCommand: string;
   resetStack: () => void;
-  packageManager: PackageManager;
   setProjectName: (name: string) => void;
+  setPackageManager: (manager: PackageManager | null) => void;
 }
 
 export const StackContext = createContext<StackContextType | undefined>(undefined);

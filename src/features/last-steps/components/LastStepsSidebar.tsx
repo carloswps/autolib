@@ -2,14 +2,12 @@
 
 import { Code } from '@mui/icons-material';
 import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
 import { CommandDisplay } from '@/features/last-steps/components/CommandDisplay';
 import { SelectedStackSummary } from '@/features/last-steps/components/SelectedStackSummary';
 import { useStack } from '@/features/stack-config/hooks/useStack';
 
 export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => {
-  const [nameProject, setNameProject] = useState<string>('');
-  const { selections, generatedCommand } = useStack();
+  const { generatedCommand, projectName, setProjectName } = useStack();
 
   return (
     <Box
@@ -58,13 +56,13 @@ export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => 
             ),
           },
         }}
-        value={nameProject}
+        value={projectName}
         onChange={e => {
           if (e.target.value.length <= maxLength) {
-            setNameProject(e.target.value);
+            setProjectName(e.target.value);
           }
         }}
-        helperText={`${nameProject.length}/${maxLength}`}
+        helperText={`${projectName.length}/${maxLength}`}
       />
       {/*<CommandDisplay command={getProjectCreationCommand()} />*/}
       <CommandDisplay command={generatedCommand} />

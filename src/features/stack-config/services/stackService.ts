@@ -1,9 +1,9 @@
-import { TechItem } from '@/shared/types/techItem';
+import { PackageManager, TechItem } from '@/shared/types/techItem';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_URL_API_BASE;
 
 export default class StackService {
-  async getPackages(): Promise<TechItem[]> {
+  async getPackages(): Promise<PackageManager[]> {
     const response = await fetch(`${API_URL}/package/read`, {
       method: 'GET',
       headers: {
@@ -19,7 +19,7 @@ export default class StackService {
   }
 
   async getTechs(): Promise<TechItem[]> {
-    const response = await fetch(`https://autolib-api.onrender.com/lib/read`, {
+    const response = await fetch(`${API_URL}/lib/read`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

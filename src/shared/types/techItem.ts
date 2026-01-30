@@ -6,3 +6,9 @@ export interface TechItem {
   dev: string | null;
   packageManagerId: number;
 }
+
+export interface PackageManager {
+  id: number;
+  name: string;
+  install: string;
+}
