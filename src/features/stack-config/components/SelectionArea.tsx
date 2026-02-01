@@ -17,7 +17,7 @@ import { ValidationManager } from '@/features/stack-config/components/Validation
 
 export const SelectionArea = () => {
   return (
-    <Grid container spacing={4} sx={{ p: 4 }}>
+    <Grid container spacing={4} sx={{ p: { xs: 2, md: 4 } }}>
       {/* LEFT COLUMN */}
       <Grid size={{ xs: 12, md: 6 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

@@ -1,10 +1,11 @@
 'use client';
 
-import { Code } from '@mui/icons-material';
-import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/material';
 import { CommandDisplay } from '@/features/last-steps/components/CommandDisplay';
 import { SelectedStackSummary } from '@/features/last-steps/components/SelectedStackSummary';
 import { useStack } from '@/features/stack-config/hooks/useStack';
+import { Code } from '@mui/icons-material';
+import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/material';
+
 
 export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => {
   const { generatedCommand, projectName, setProjectName } = useStack();
@@ -13,13 +14,12 @@ export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => 
     <Box
       component={'aside'}
       sx={{
-        width: '30vw',
-        height: '100vh',
-        position: 'sticky',
+        width: { xs: '100%', md: '30vw' },
+        height: { xs: 'auto', md: '100vh' },
+        position: { xs: 'relative', md: 'sticky' },
         top: 0,
-        bgColor: 'background.paper',
-        borderRight: '1px solid',
-        borderColor: 'divider',
+        borderRight: { xs: 'none', md: '1px solid' },
+        borderColor: { xs: '1px solid', md: 'none' },
         p: 4,
         bgcolor: 'background.paper',
       }}
@@ -64,7 +64,6 @@ export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => 
         }}
         helperText={`${projectName.length}/${maxLength}`}
       />
-      {/*<CommandDisplay command={getProjectCreationCommand()} />*/}
       <CommandDisplay command={generatedCommand} />
       <SelectedStackSummary />
     </Box>

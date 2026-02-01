@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 
 export default function Header() {
@@ -10,7 +10,7 @@ export default function Header() {
         width: '100%',
       }}
     >
-      <Stack spacing={1} alignItems={'center'} justifyContent={'center'}>
+      <Stack alignItems={'center'} justifyContent={'center'}>
         <Image src={'/logo.png'} alt={'Logo Auto Lib'} width={100} height={100} priority style={{ height: 'auto' }} />
         <Typography
           variant="h4"
@@ -20,14 +20,22 @@ export default function Header() {
             letterSpacing: '-0.02em',
             color: 'text.primary',
             textAlign: 'center',
+            fontSize: { xs: '2rem', md: '3rem' },
           }}
         >
           Escolha a sua Stack
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{
+            fontSize: { xs: '12px' },
+          }}
+        >
           Selecione as tecnologias para o seu próximo projeto
         </Typography>
       </Stack>
+      <Divider variant="middle" />
     </Box>
   );
 }

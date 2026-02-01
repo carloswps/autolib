@@ -1,10 +1,10 @@
 'use client';
 
 import { useStack } from '@/features/stack-config/hooks/useStack';
-import { Box, Button, Divider, Paper, Typography } from '@mui/material';
-import Image from 'next/image';
 import { ICON_MAPPER } from '@/shared/constants/iconMapper';
 import { RestartAlt } from '@mui/icons-material';
+import { Box, Button, Divider, Paper, Typography } from '@mui/material';
+import Image from 'next/image';
 
 export const SelectedStackSummary = () => {
   const { selections, resetStack } = useStack();
@@ -52,14 +52,14 @@ export const SelectedStackSummary = () => {
         ))}
       </Box>
       <Divider sx={{ mb: 3 }} />
-      <Box sx={{ dislay: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           variant={'outlined'}
           onClick={resetStack}
           startIcon={<RestartAlt />}
           sx={{
             borderRadius: '12px',
-            texTransform: 'none',
+            textTransform: 'none',
             color: '#5e5d71',
             borderColor: '#e0e0e0',
             px: 4,

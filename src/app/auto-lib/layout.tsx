@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import Header from '@/shared/components/Header';
 import { LastStepsSidebar } from '@/features/last-steps/components/LastStepsSidebar';
 import { StackProvider } from '@/features/stack-config/hooks/StackProvider';
@@ -11,7 +11,7 @@ export default function AutoLibLayout({ children }: { children: ReactNode }) {
     <StackProvider>
       <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
         <Header />
-        <Box sx={{ flexGrow: 1, display: 'flex' }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: { xs: 'column-reverse', md: 'row' } }}>
           <LastStepsSidebar />
           <Box
             component={'main'}
