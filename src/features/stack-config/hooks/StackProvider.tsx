@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { PackageManager, TechItem } from '@/shared/types/techItem';
 import StackService from '@/features/stack-config/services/stackService';
+import { PackageManager, TechItem } from '@/shared/types/techItem';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { StackContext } from './StackContext';
 
 export const StackProvider = ({ children }: { children: ReactNode }) => {
