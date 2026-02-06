@@ -71,6 +71,12 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
 
+    const installDeps = selectedList.map(item => item.install).join(' ');
+    const devDeps = selectedList
+      .map(s => s.dev)
+      .filter(Boolean)
+      .join('');
+
     const baseInstall = selectedPackageManager?.install ?? 'pnpm add';
     const commandLines: string[] = [];
 
@@ -79,19 +85,10 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (selectedList.length > 0) {
-      selectedList.forEach(item => {
-        if (item.install && item.install.includes(' ')) {
-          commandLines.push(item.install);
-        } else if (item.install) {
-          commandLines.push(`${baseInstall} ${item.install}`);
-        }
-
-        if (item.dev && item.dev.includes(' ')) {
-          commandLines.push(item.dev);
-        } else if (item.dev) {
-          commandLines.push(`${baseInstall} -D ${item.dev}`);
-        }
-      });
+      commandLines.push(`${baseInstall} ${installDeps}`);
+      if (devDeps) {
+        commandLines.push(`${baseInstall} -D ${devDeps}`);
+      }
     }
 
     if (commandLines.length === 0) return 'Selecione uma tecnologia...';

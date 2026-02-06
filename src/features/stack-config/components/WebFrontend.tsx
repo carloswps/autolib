@@ -1,7 +1,7 @@
-import { SectionsWrapper } from '@/shared/components/SectionsWrapper';
 import { useStack } from '@/features/stack-config/hooks/useStack';
-import { TechButton } from '@/shared/components/TechButton';
 import { ClearButton } from '@/shared/components/ClearButton';
+import { SectionsWrapper } from '@/shared/components/SectionsWrapper';
+import { TechButton } from '@/shared/components/TechButton';
 
 export const WebFrontend = () => {
   const { availableTechs, toggleSelection, selections, clearCategory } = useStack();
