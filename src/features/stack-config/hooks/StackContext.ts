@@ -14,6 +14,7 @@ interface StackContextType {
   resetStack: () => void;
   setProjectName: (name: string) => void;
   setPackageManager: (manager: PackageManager | null) => void;
+  error: string | null;
 }
 
 export const StackContext = createContext<StackContextType | undefined>(undefined);

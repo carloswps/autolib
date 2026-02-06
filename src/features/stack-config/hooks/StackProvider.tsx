@@ -1,5 +1,8 @@
+'use client';
+
 import StackService from '@/features/stack-config/services/stackService';
 import { PackageManager, TechItem } from '@/shared/types/techItem';
+import { handleErrorMessage } from '@/shared/utils/handleError';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { StackContext } from './StackContext';
 
@@ -10,6 +13,7 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const [selectedPackageManager, setSelectedPackageManager] = useState<PackageManager | null>(null);
   const [projectName, setProjectName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const getStackService = useRef(new StackService()).current;
 
@@ -17,13 +21,16 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await getStackService.getTechs();
         const uniqueByCategoryAndName = Array.from(
           new Map(data.map(item => [`${item.category}:${item.name}`, item])).values()
         );
         setAvailableTechs(uniqueByCategoryAndName);
-      } catch (e: any) {
-        console.error('Falha ao buscar pacotes: ', e.message || 'Erro desconhecido.');
+      } catch (error) {
+        const erroMessage = handleErrorMessage(error);
+        setError(erroMessage);
+        console.error('Fetch failed', erroMessage);
       } finally {
         setLoading(false);
       }
@@ -35,11 +42,14 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     const fetchPackage = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await getStackService.getPackages();
         setPackageManagers(data);
         setSelectedPackageManager(prev => prev ?? data[0] ?? null);
-      } catch (e: any) {
-        console.error('Falha ao buscar pacotes: ', e.message || 'Erro desconhecido.');
+      } catch (error) {
+        const errorMessage = handleErrorMessage(error);
+        setError(errorMessage);
+        console.error('Fetch failed', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -61,12 +71,6 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
 
-    const installDeps = selectedList.map(s => s.install).join(' ');
-    const devDeps = selectedList
-      .map(s => s.dev)
-      .filter(Boolean)
-      .join(' ');
-
     const baseInstall = selectedPackageManager?.install ?? 'pnpm add';
     const commandLines: string[] = [];
 
@@ -75,10 +79,19 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (selectedList.length > 0) {
-      commandLines.push(`${baseInstall} ${installDeps}`);
-      if (devDeps) {
-        commandLines.push(`${baseInstall} -D ${devDeps}`);
-      }
+      selectedList.forEach(item => {
+        if (item.install && item.install.includes(' ')) {
+          commandLines.push(item.install);
+        } else if (item.install) {
+          commandLines.push(`${baseInstall} ${item.install}`);
+        }
+
+        if (item.dev && item.dev.includes(' ')) {
+          commandLines.push(item.dev);
+        } else if (item.dev) {
+          commandLines.push(`${baseInstall} -D ${item.dev}`);
+        }
+      });
     }
 
     if (commandLines.length === 0) return 'Selecione uma tecnologia...';
@@ -99,6 +112,7 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
         projectName,
         selections,
         loading,
+        error,
         toggleSelection,
         clearCategory,
         generatedCommand,

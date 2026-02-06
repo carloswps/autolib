@@ -7,7 +7,7 @@ export const ICON_MAPPER: Record<string, string> = {
   React: '/icons/react.png',
   Astro: '/icons/astro.png',
   'React Router': '/icons/ReactRouter.png',
-  Zod: '/icons/git.png',
+  Zod: '/icons/zod-icon.png',
   Node: '/icons/nodejs.png',
   Cloudflare: '/icons/cloudflare.png',
   PostgreSQL: '/icons/postgresql.png',
