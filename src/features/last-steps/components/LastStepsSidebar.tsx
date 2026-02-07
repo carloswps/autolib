@@ -3,9 +3,8 @@
 import { CommandDisplay } from '@/features/last-steps/components/CommandDisplay';
 import { SelectedStackSummary } from '@/features/last-steps/components/SelectedStackSummary';
 import { useStack } from '@/features/stack-config/hooks/useStack';
-import { Code } from '@mui/icons-material';
-import { Box, Divider, InputAdornment, TextField, Typography } from '@mui/material';
-
+import { Box, Divider, Typography } from '@mui/material';
+import { NameProjectInput } from './NameProjectInput';
 
 export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => {
   const { generatedCommand, projectName, setProjectName } = useStack();
@@ -43,27 +42,10 @@ export const LastStepsSidebar = ({ maxLength = 15 }: { maxLength?: number }) => 
         <Divider orientation="horizontal" />
       </Typography>
 
-      <TextField
-        variant="outlined"
-        label="Nome do projeto"
-        placeholder="Digite o nome do seu projeto..."
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Code />
-              </InputAdornment>
-            ),
-          },
-        }}
-        value={projectName}
-        onChange={e => {
-          if (e.target.value.length <= maxLength) {
-            setProjectName(e.target.value);
-          }
-        }}
-        helperText={`${projectName.length}/${maxLength}`}
-      />
+      <Box sx={{ mt: 'auto', backgroundColor: 'transparent' }}>
+        <NameProjectInput value={projectName} onChange={setProjectName} maxLength={maxLength} isLoading={false} />
+      </Box>
+
       <CommandDisplay command={generatedCommand} />
       <SelectedStackSummary />
     </Box>

@@ -2,8 +2,9 @@
 
 import StackService from '@/features/stack-config/services/stackService';
 import { PackageManager, TechItem } from '@/shared/types/techItem';
+import { debounce } from '@/shared/utils/debounce';
 import { handleErrorMessage } from '@/shared/utils/handleError';
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StackContext } from './StackContext';
 
 export const StackProvider = ({ children }: { children: ReactNode }) => {
@@ -11,9 +12,11 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const [selections, setSelections] = useState<Record<string, TechItem | null>>({});
   const [packageManagers, setPackageManagers] = useState<PackageManager[]>([]);
   const [selectedPackageManager, setSelectedPackageManager] = useState<PackageManager | null>(null);
-  const [projectName, setProjectName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [projectName, setProjectName] = useState('');
+  const debouncedSetProjectName = useRef<((name: string) => void) | null>(null);
 
   const getStackService = useRef(new StackService()).current;
 
@@ -71,6 +74,11 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
 
+    for (const key in selections) {
+      const item = selections[key];
+      if (item) selectedList.push(item);
+    }
+
     const installDeps = selectedList.map(item => item.install).join(' ');
     const devDeps = selectedList
       .map(s => s.dev)
@@ -100,6 +108,18 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
     setSelections({});
   };
 
+  useEffect(() => {
+    debouncedSetProjectName.current = debounce((name: string) => {
+      setProjectName(name);
+    }, 0);
+  }, []);
+
+  const handleSetProjectName = useCallback((name: string) => {
+    if (debouncedSetProjectName.current) {
+      debouncedSetProjectName.current(name);
+    }
+  }, []);
+
   return (
     <StackContext.Provider
       value={{
@@ -114,7 +134,7 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
         clearCategory,
         generatedCommand,
         resetStack,
-        setProjectName,
+        setProjectName: handleSetProjectName,
         setPackageManager: setSelectedPackageManager,
       }}
     >

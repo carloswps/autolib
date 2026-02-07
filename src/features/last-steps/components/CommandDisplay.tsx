@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import { useCallback, useState } from 'react';
 
 export const CommandDisplay = ({ command }: { command: string }) => {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
+  const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(command);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
+  }, [command]);
 
   return (
     <Box sx={{ mt: 3 }}>

@@ -5,11 +5,21 @@ import { ICON_MAPPER } from '@/shared/constants/iconMapper';
 import { RestartAlt } from '@mui/icons-material';
 import { Box, Button, Divider, Paper, Typography } from '@mui/material';
 import Image from 'next/image';
+import { useMemo } from 'react';
 
 export const SelectedStackSummary = () => {
   const { selections, resetStack } = useStack();
 
-  const selectedItems = Object.values(selections).filter(item => item !== null);
+  const selectedItems = useMemo(() => {
+    const items: Array<{ id: string; name: string }> = [];
+    for (const category in selections) {
+      const item = selections[category];
+      if (item) {
+        items.push({ id: `${category}-${item.name}`, name: item.name });
+      }
+    }
+    return items;
+  }, [selections]);
 
   return (
     <Box>
@@ -47,7 +57,25 @@ export const SelectedStackSummary = () => {
               boxShadow: 'none',
             }}
           >
-            <Image src={ICON_MAPPER[item.name] || '/logo.png'} alt="" width={20} height={20} />
+            {ICON_MAPPER[item.name] ? (
+              <Image src={ICON_MAPPER[item.name] || '/logo.png'} alt="" width={20} height={20} />
+            ) : (
+              <Box
+                sx={{
+                  width: 20,
+                  height: 20,
+                  background: '#f0f0f0',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '10px',
+                  color: '#777',
+                }}
+              >
+                {item.name.charAt(0)}
+              </Box>
+            )}
           </Paper>
         ))}
       </Box>
