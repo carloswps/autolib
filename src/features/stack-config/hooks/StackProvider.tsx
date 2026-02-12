@@ -33,7 +33,6 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         const erroMessage = handleErrorMessage(error);
         setError(erroMessage);
-        console.error('Fetch failed', erroMessage);
       } finally {
         setLoading(false);
       }
@@ -52,13 +51,22 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         const errorMessage = handleErrorMessage(error);
         setError(errorMessage);
-        console.error('Fetch failed', errorMessage);
       } finally {
         setLoading(false);
       }
     };
     fetchPackage();
   }, [getStackService]);
+
+  useEffect(() => {
+    const selectedRuntime = selections['runtime'];
+    if (selectedRuntime?.name.toLowerCase() === 'bun') {
+      const bunPackageManager = packageManagers.find(pm => pm.name.toLowerCase() === 'bun');
+      if (bunPackageManager) {
+        setSelectedPackageManager(bunPackageManager);
+      }
+    }
+  }, [selections, packageManagers]);
 
   const toggleSelection = (item: TechItem) => {
     setSelections(prev => ({
@@ -74,16 +82,22 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
 
-    for (const key in selections) {
-      const item = selections[key];
-      if (item) selectedList.push(item);
-    }
+    const installableItems = selectedList.filter(item => item.category !== 'runtime' && item.category !== 'git');
 
-    const installDeps = selectedList.map(item => item.install).join(' ');
-    const devDeps = selectedList
-      .map(s => s.dev)
+    const installDepsString = installableItems
+      .map(item => item.install)
       .filter(Boolean)
-      .join('');
+      .join(' ');
+
+    const uniqueInstallDeps = [...new Set(installDepsString.split(' ').filter(Boolean))];
+
+    const devDepsString = installableItems
+      .map(item => item.dev)
+      .filter(Boolean)
+      .map(devString => devString.split(' ').pop()!)
+      .filter(Boolean);
+
+    const uniqueDevDeps = [...new Set(devDepsString)].filter(p => !uniqueInstallDeps.includes(p));
 
     const baseInstall = selectedPackageManager?.install ?? 'pnpm add';
     const commandLines: string[] = [];
@@ -92,11 +106,11 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
       commandLines.push(`mkdir "${projectName.trim()}"`, `cd "${projectName.trim()}"`);
     }
 
-    if (selectedList.length > 0) {
-      commandLines.push(`${baseInstall} ${installDeps}`);
-      if (devDeps) {
-        commandLines.push(`${baseInstall} -D ${devDeps}`);
-      }
+    if (uniqueInstallDeps.length > 0) {
+      commandLines.push(`${baseInstall} ${uniqueInstallDeps.join(' ')}`);
+    }
+    if (uniqueDevDeps.length > 0) {
+      commandLines.push(`${baseInstall} -D ${uniqueDevDeps.join(' ')}`);
     }
 
     if (commandLines.length === 0) return 'Selecione uma tecnologia...';
