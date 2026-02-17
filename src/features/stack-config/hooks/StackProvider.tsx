@@ -74,30 +74,49 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
     const name = projectName.trim() || 'my-app';
+    const baseInstall = selectedPackageManager?.install ?? 'pnp add';
+
+    const scaffolds: string[] = [];
+    const deps: string[] = [];
+
+    const devDeps: string[] = [];
+
+    selectedList.forEach(tech => {
+      if (tech.category === 'web-frontend' && tech.name.toLocaleLowerCase().includes('next.js')) {
+        scaffolds.push(`npx created-next-app@latest ${name} --typescript --tailwind --eslint`);
+      } else if (tech.category === 'web-frontend' && tech.name.toLocaleLowerCase().includes('astro')) {
+        scaffolds.push(`npm create astro@latest ${name} -- --template framework=react`);
+      } else {
+        if (tech.install) {
+          deps.push(tech.install);
+        }
+        if (tech.dev) {
+          devDeps.push(tech.dev);
+        }
+      }
+    });
+
     const commandLines: string[] = [];
 
-    const installDeps = selectedList.map(item => item.install).join(' ');
-    const devDeps = selectedList
-      .map(s => s.dev)
-      .filter(Boolean)
-      .join('');
-
-    const baseInstall = selectedPackageManager?.install ?? 'pnpm add';
-
-    if (projectName.trim()) {
-      commandLines.push(`mkdir "${projectName.trim()}"`, `cd "${projectName.trim()}"`);
+    if (scaffolds.length > 0) {
+      commandLines.push(...scaffolds);
+      commandLines.push(`cd ${name}`);
+    } else {
+      commandLines.push(`mkdir "${name}"`, `cd "${name}"`, `npm init -y`);
     }
 
-    if (selectedList.length > 0) {
-      commandLines.push(`${baseInstall} ${installDeps}`);
-      if (devDeps !== null) {
-        commandLines.push(`${baseInstall} -D ${devDeps}`);
+    if (deps.length > 0) {
+      const filterDeps = deps.filter((d: string) => d !== 'next');
+      if (filterDeps.length > 0) {
+        commandLines.push(`${baseInstall} ${filterDeps.join(' ')}`);
       }
     }
 
-    if (commandLines.length === 0) return 'Selecione uma tecnologia...';
+    if (devDeps.length > 0) {
+      commandLines.push(`${baseInstall} -D ${devDeps.join(' ')}`);
+    }
 
-    return commandLines.join('\n');
+    return commandLines.length > 0 ? commandLines.join('\n') : 'Escolha a sua Stack...';
   }, [projectName, selections, selectedPackageManager]);
 
   const resetStack = () => {
