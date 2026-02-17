@@ -73,11 +73,8 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
 
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
-
-    for (const key in selections) {
-      const item = selections[key];
-      if (item) selectedList.push(item);
-    }
+    const name = projectName.trim() || 'my-app';
+    const commandLines: string[] = [];
 
     const installDeps = selectedList.map(item => item.install).join(' ');
     const devDeps = selectedList
@@ -86,7 +83,6 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
       .join('');
 
     const baseInstall = selectedPackageManager?.install ?? 'pnpm add';
-    const commandLines: string[] = [];
 
     if (projectName.trim()) {
       commandLines.push(`mkdir "${projectName.trim()}"`, `cd "${projectName.trim()}"`);
@@ -94,7 +90,7 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
 
     if (selectedList.length > 0) {
       commandLines.push(`${baseInstall} ${installDeps}`);
-      if (devDeps) {
+      if (devDeps !== null) {
         commandLines.push(`${baseInstall} -D ${devDeps}`);
       }
     }

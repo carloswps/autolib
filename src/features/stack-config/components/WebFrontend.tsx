@@ -7,6 +7,8 @@ export const WebFrontend = () => {
   const { availableTechs, toggleSelection, selections, clearCategory } = useStack();
   const techs = availableTechs.filter(tech => tech.category === 'web-frontend');
   const selectedId = selections['web-frontend']?.id;
+  console.log('Available Techs in Web Frontend', techs);
+  console.log('Selected Tech in Web Frontend', selections['web-frontend']);
 
   return (
     <SectionsWrapper title={'Web Frontend'} subtitle={'Escolha a sua stack de frontend preferida.'}>
