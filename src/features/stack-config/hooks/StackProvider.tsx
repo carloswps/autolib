@@ -3,7 +3,9 @@
 import StackService from '@/features/stack-config/services/stackService';
 import { PackageManager, TechItem } from '@/shared/types/techItem';
 import { debounce } from '@/shared/utils/debounce';
+import { formatProjectName } from '@/shared/utils/formatProjectName';
 import { handleErrorMessage } from '@/shared/utils/handleError';
+import { SCAFFOLD_COMMANDS, SCAFOOLD_CATEGORIES } from '@/shared/utils/scaffoldCommands';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StackContext } from './StackContext';
 
@@ -73,51 +75,66 @@ export const StackProvider = ({ children }: { children: ReactNode }) => {
 
   const generatedCommand = useMemo(() => {
     const selectedList = Object.values(selections).filter((s): s is TechItem => s !== null);
-    const name = projectName.trim() || 'my-app';
-    const baseInstall = selectedPackageManager?.install ?? 'pnp add';
-
-    const scaffolds: string[] = [];
-    const deps: string[] = [];
-
-    const devDeps: string[] = [];
-
-    selectedList.forEach(tech => {
-      if (tech.category === 'web-frontend' && tech.name.toLocaleLowerCase().includes('next.js')) {
-        scaffolds.push(`npx created-next-app@latest ${name} --typescript --tailwind --eslint`);
-      } else if (tech.category === 'web-frontend' && tech.name.toLocaleLowerCase().includes('astro')) {
-        scaffolds.push(`npm create astro@latest ${name} -- --template framework=react`);
-      } else {
-        if (tech.install) {
-          deps.push(tech.install);
-        }
-        if (tech.dev) {
-          devDeps.push(tech.dev);
-        }
-      }
-    });
-
     const commandLines: string[] = [];
+    const baseInstall = selectedPackageManager?.install ?? 'npm install';
+    const pnName = selectedPackageManager?.name ?? 'npm';
+    const formattedName = formatProjectName(projectName);
 
-    if (scaffolds.length > 0) {
-      commandLines.push(...scaffolds);
-      commandLines.push(`cd ${name}`);
-    } else {
-      commandLines.push(`mkdir "${name}"`, `cd "${name}"`, `npm init -y`);
+    const mainFrameWork = selectedList.find(item => SCAFOOLD_CATEGORIES.includes(item.category));
+
+    // if (!mainFrameWork) {
+    //   return <Alert severity="info">Selecione um framework principal (Web, Mobile ou Backend) para continuar.</Alert>;
+    // }
+
+    // if (!projectName.trim()) {
+    //   return <Alert severity="info">Informe o nome do projeto para gerar o comando.</Alert>;
+    // }
+
+    if (!mainFrameWork) {
+      return '⚠️ Selecione um framework principal (Web, Mobile ou Backend) para continuar.';
     }
 
-    if (deps.length > 0) {
-      const filterDeps = deps.filter((d: string) => d !== 'next');
-      if (filterDeps.length > 0) {
-        commandLines.push(`${baseInstall} ${filterDeps.join(' ')}`);
+    if (!formattedName) {
+      return '⚠️ Informe o nome do projeto para gerar o comando.';
+    }
+
+    const scaffoldCommands = SCAFFOLD_COMMANDS[mainFrameWork.name];
+    if (scaffoldCommands) {
+      commandLines.push(scaffoldCommands(formattedName, pnName));
+    }
+
+    const secondaryList = selectedList.filter(item => item !== mainFrameWork);
+
+    if (secondaryList.length > 0) {
+      const resolvedList = secondaryList.map(item => {
+        const match = availableTechs.find(
+          t => t.name === item.name && t.category === item.category && t.packageManagerId === selectedPackageManager?.id
+        );
+        return match ?? item;
+      });
+
+      const installDeps = resolvedList.map(item => item.install).join(' ');
+      commandLines.push(`cd "${formattedName}" && ${baseInstall} ${installDeps}`);
+
+      const devDeps = resolvedList
+        .map(s => s.dev)
+        .filter(Boolean)
+        .join(' ');
+
+      if (devDeps.length > 0) {
+        commandLines.push(`${baseInstall} -D ${devDeps}`);
       }
     }
 
-    if (devDeps.length > 0) {
-      commandLines.push(`${baseInstall} -D ${devDeps.join(' ')}`);
-    }
-
-    return commandLines.length > 0 ? commandLines.join('\n') : 'Escolha a sua Stack...';
-  }, [projectName, selections, selectedPackageManager]);
+    return commandLines.join('\n');
+  }, [
+    selections,
+    selectedPackageManager?.install,
+    selectedPackageManager?.name,
+    selectedPackageManager?.id,
+    projectName,
+    availableTechs,
+  ]);
 
   const resetStack = () => {
     setSelections({});
